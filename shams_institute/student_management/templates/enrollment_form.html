@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Enrollment</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Flatpickr CSS for date picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+            max-width: 800px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-group label {
+            font-weight: bold;
+            color: #495057;
+        }
+        .form-control {
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="btn btn-secondary mb-3" href="{% url 'dashboard' %}">Dashboard</a>
+        <h1>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Enrollment</h1>
+        <div class="form-container">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="student_search">Search Student by Name or ID</label>
+                    <input type="text" id="student_search" class="form-control" placeholder="Enter student name or ID">
+                </div>
+                <div class="form-group">
+                    <label for="student_select">Select Student</label>
+                    <select id="student_select" name="student" class="form-control">
+                        <option value="">Select a student</option>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                </div>
+                
+                <!-- Course Selection -->
+                <div class="form-group">
+                    <label for="id_course">Select Course</label>
+                    {{ form.course }}
+                </div>
+
+                <!-- Slot Selection (Updated to Include Instructor Name) -->
+                <div class="form-group">
+                    <label for="id_slot">Select Slot</label>
+                    <select id="id_slot" name="slot" class="form-control">
+                        <option value="">Select a slot</option>
+                    </select>
+                </div>
+
+                {% for field in form %}
+                    {% if field.name not in 'student,course,slot' %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% for error in field.errors %}
+                                <div class="alert alert-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Update{% else %}Add{% endif %}</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Search student by name or ID
+            $('#student_search').on('input', function () {
+                let query = $(this).val();
+                if (query.length > 2) {
+                    fetch(`/search_students/?q=${query}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            $('#student_select').html('<option value="">Select a student</option>');
+                            data.students.forEach(student => {
+                                $('#student_select').append(
+                                    `<option value="${student.id}">${student.name} (${student.student_id})</option>`
+                                );
+                            });
+                        });
+                }
+            });
+
+            // Initialize Flatpickr for enrollment date
+            flatpickr("#id_enrollment_date", {
+                dateFormat: "Y-m-d",
+                allowInput: true,
+            });
+
+            // Filter slots based on selected course & show instructor
+            $('#id_course').change(function () {
+        let courseId = $(this).val();
+        if (courseId) {
+            fetch(`/get_slots/?course_id=${courseId}`)
+                .then(response => response.json())
+                .then(data => {
+                    $('#id_slot').html('<option value="">Select a slot</option>');
+
+                    data.slots.forEach(slot => {
+                        $('#id_slot').append(
+                            `<option value="${slot.id}">
+                                ${slot.start_time} - ${slot.end_time} (Instructor: ${slot.instructor})
+                            </option>`
+                        );
+                    });
+                })
+                .catch(error => console.error('Error fetching slots:', error));
+        } else {
+            $('#id_slot').html('<option value="">Select a slot</option>');
+        }
+    });
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Students{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mb-4">Students</h1>
+
+    <!-- Search Form -->
+    <form method="get" action="{% url 'student_list' %}" class="search-form mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <input type="text" 
+                       name="name" 
+                       class="form-control" 
+                       placeholder="Search by name..." 
+                       value="{{ request.GET.name }}">
+            </div>
+            <div class="col-md-3">
+                <input type="date" 
+                       name="enrollment_date" 
+                       class="form-control" 
+                       placeholder="Search by enrollment date..." 
+                       value="{{ request.GET.enrollment_date }}">
+            </div>
+            <div class="col-md-3">
+                <input type="text" 
+                       name="student_id" 
+                       class="form-control" 
+                       placeholder="Search by student ID..." 
+                       value="{{ request.GET.student_id }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary btn-block">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Action Buttons -->
+    <div class="mb-4">
+        <a class="btn btn-success" href="{% url 'student_add' %}">Add Student</a>
+        <a class="btn btn-info" href="{% url 'dashboard' %}">Go to Dashboard</a>
+    </div>
+
+    <!-- Student List Table -->
+    <table class="table table-bordered table-striped table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Name</th>
+                <th>Student ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr class="clickable-row" data-href="{% url 'student_detail' student.pk %}">
+                <td>{{ student.name }}</td>
+                <td>{{ student.student_id }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .search-form {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .clickable-row {
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .clickable-row:hover {
+        background-color: #f1f1f1;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    .thead-dark th {
+        background-color: #343a40;
+        color: white;
+    }
+    .btn-custom {
+        margin: 2px;
+    }
+</style>
+
+<script>
+    // Make rows clickable
+    document.addEventListener("DOMContentLoaded", function() {
+        const rows = document.querySelectorAll(".clickable-row");
+        rows.forEach(row => {
+            row.addEventListener("click", function() {
+                window.location.href = row.dataset.href;
+            });
+        });
+    });
+</script>
+{% endblock %}

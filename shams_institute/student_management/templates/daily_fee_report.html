@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daily Fee Report</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #343a40;
+        }
+        .btn {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .status-paid {
+            color: #28a745; /* Green for paid status */
+        }
+        .status-unpaid {
+            color: #dc3545; /* Red for unpaid status */
+        }
+        .btn-record-payment {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-record-payment:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="btn btn-secondary" href="{% url 'dashboard' %}">Dashboard</a>
+        <h1>Daily Fee Report - {{ today }}</h1>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Student ID</th>
+                    <th>Course</th>
+                    <th>Due Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fee in unpaid_fees %}
+                <tr>
+                    <td>{{ fee.enrollment.student.name }}</td>
+                    <td>{{ fee.enrollment.student.student_id }}</td>
+                    <td>{{ fee.enrollment.course.name }}</td>
+                    <td>{{ fee.due_date }}</td>
+                    <td>{{ fee.amount }}</td>
+                    <td class="{% if fee.is_paid %}status-paid{% else %}status-unpaid{% endif %}">
+                        {% if fee.is_paid %}Paid{% else %}Unpaid{% endif %}
+                    </td>
+                    <td>
+                        <a class="btn-record-payment" href="{% url 'record_fee_payment' fee.id %}">Record Payment</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

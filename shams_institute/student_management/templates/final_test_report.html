@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Final Test Report</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Flatpickr CSS for datepicker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .report-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .table thead th {
+            background-color: #007bff;
+            color: white;
+        }
+        .form-inline {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .form-control-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        .form-check-label {
+            margin-right: 15px;
+        }
+        .btn-xs {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            border-radius: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="btn btn-secondary mb-3" href="{% url 'dashboard' %}">← Dashboard</a>
+        
+        <div class="report-container">
+            <h1>Final Test Report</h1>
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Course</th>
+                            <th>Test Date</th>
+                            <th>Grade</th>
+                            <th>Attendance</th>
+                            <th>Completed</th>
+                            <th>Retest</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for final_test in final_tests %}
+                        <tr>
+                            <td>{{ final_test.student.name }}</td>
+                            <td>{{ final_test.course.name }}</td>
+                            <td>
+                                <input type="text" 
+                                       class="form-control form-control-sm flatpickr" 
+                                       name="test_date" 
+                                       value="{{ final_test.test_date|date:'Y-m-d' }}"
+                                       data-id="{{ final_test.id }}">
+                            </td>
+                            <td>
+                                <select class="form-control form-control-sm grade-select" 
+                                        name="grade" 
+                                        data-id="{{ final_test.id }}">
+                                    <option value="A" {% if final_test.grade == 'A' %}selected{% endif %}>A</option>
+                                    <option value="B" {% if final_test.grade == 'B' %}selected{% endif %}>B</option>
+                                    <option value="C" {% if final_test.grade == 'C' %}selected{% endif %}>C</option>
+                                    <option value="D" {% if final_test.grade == 'D' %}selected{% endif %}>D</option>
+                                    <option value="F" {% if final_test.grade == 'F' %}selected{% endif %}>F</option>
+                                </select>
+                            </td>
+                            <td>
+                                <div class="form-check">
+                                    <input type="checkbox" 
+                                           class="form-check-input attendance-check" 
+                                           name="test_attendance" 
+                                           data-id="{{ final_test.id }}"
+                                           {% if final_test.test_attendance %}checked{% endif %}>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-check">
+                                    <input type="checkbox" 
+                                           class="form-check-input done-check" 
+                                           name="test_done" 
+                                           data-id="{{ final_test.id }}"
+                                           {% if final_test.test_done %}checked{% endif %}>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-check">
+                                    <input type="checkbox" 
+                                           class="form-check-input retest-check" 
+                                           name="retest" 
+                                           data-id="{{ final_test.id }}"
+                                           {% if final_test.retest %}checked{% endif %}>
+                                </div>
+                            </td>
+                            <td>
+                                <form method="post" action="{% url 'final_test_report' %}" class="update-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="id" value="{{ final_test.id }}">
+                                    <button type="submit" class="btn btn-primary btn-xs">Update</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Initialize Flatpickr for date inputs
+        flatpickr(".flatpickr", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            static: true
+        });
+
+        // Add event listeners for real-time updates
+        document.querySelectorAll('.form-control, .form-check-input').forEach(element => {
+            element.addEventListener('change', function() {
+                const form = this.closest('tr').querySelector('.update-form');
+                form.requestSubmit();
+            });
+        });
+    </script>
+</body>
+</html>

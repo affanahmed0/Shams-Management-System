@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Success</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Success!</h1>
+    <p>Your action was successful.</p>
+    <a class="btn" href="{% url 'dashboard' %}">Go to Dashboard</a>
+    <a class="btn" href="{% url 'dashboard' %}">Dashboard</a>
+</body>
+</html>

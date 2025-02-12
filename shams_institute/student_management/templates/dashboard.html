@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h1 class="text-center mb-4">Dashboard</h1>
+
+    <!-- Statistics Section -->
+    <div class="stats card mb-4">
+        <div class="card-body">
+            <h2 class="card-title text-primary">Statistics</h2>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="stat-item text-center p-3 border rounded">
+                        <h3>Total Students</h3>
+                        <p class="display-4">{{ total_students }}</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-item text-center p-3 border rounded">
+                        <h3>Total Fees Collected</h3>
+                        <p class="display-4">{{ total_fees_collected }}</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-item text-center p-3 border rounded">
+                        <h3>Pending Fees</h3>
+                        <p class="display-4">{{ pending_fees }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manage Links Section -->
+    <div class="links card mb-4">
+        <div class="card-body">
+            <h2 class="card-title text-primary">Manage</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <a href="{% url 'student_list' %}" class="text-decoration-none text-dark">Students</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'enrollment_list' %}" class="text-decoration-none text-dark">Enrollments</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'course_list' %}" class="text-decoration-none text-dark">Courses</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <a href="{% url 'slot_list' %}" class="text-decoration-none text-dark">Slots</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'fee_list' %}" class="text-decoration-none text-dark">Fees</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'attendance_list' %}" class="text-decoration-none text-dark">Attendance</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Section -->
+    <div class="reports card mb-4">
+        <div class="card-body">
+            <h2 class="card-title text-primary">Reports</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <a href="{% url 'daily_fee_report' %}" class="text-decoration-none text-dark">Daily Fee Report</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'daily_attendance_report' %}" class="text-decoration-none text-dark">Daily Attendance Report</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'course_slots_report' %}" class="text-decoration-none text-dark">Course Slots Report</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <a href="{% url 'final_test_report' %}" class="text-decoration-none text-dark">Final Test Report</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'overdue_fees_report' %}" class="text-decoration-none text-dark">Overdue Fees Report</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard {
+        padding: 20px;
+    }
+    .stat-item {
+        background-color: #f8f9fa;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .stat-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .list-group-item {
+        transition: background-color 0.3s ease;
+    }
+    .list-group-item:hover {
+        background-color: #007bff;
+    }
+    .list-group-item:hover a {
+        color: white !important;
+    }
+</style>
+{% endblock %}

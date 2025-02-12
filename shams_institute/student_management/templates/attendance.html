@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Record Attendance</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #343a40;
+        }
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .form-group label {
+            font-weight: bold;
+            color: #495057;
+        }
+        .form-control {
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Record Attendance</h1>
+        <div class="form-container">
+            <a class="btn btn-secondary mb-3" href="{% url 'dashboard' %}">Go to Dashboard</a>
+            <form method="get" class="form-inline mb-3">
+                <input type="text" name="slot_name" class="form-control mr-2" placeholder="Search by Course Name" value="{{ request.GET.slot_name }}">
+                <input type="text" name="instructor_name" class="form-control mr-2" placeholder="Search by Instructor Name" value="{{ request.GET.instructor_name }}">
+                <input type="date" name="date" class="form-control mr-2" value="{{ selected_date }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+            {% if slots %}
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Course</th>
+                            <th>Instructor</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for slot in slots %}
+                        <tr>
+                            <td>{{ slot.course.name }}</td>
+                            <td>{{ slot.instructor }}</td>
+                            <td>{{ slot.start_time }}</td>
+                            <td>{{ slot.end_time }}</td>
+                            <td>
+                                <a href="?slot_id={{ slot.id }}&slot_name={{ request.GET.slot_name }}&instructor_name={{ request.GET.instructor_name }}&date={{ selected_date }}" class="btn btn-primary btn-sm">View Attendance</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No slots available for the current time or matching the search criteria.</p>
+            {% endif %}
+        </div>
+        {% if attendance_records %}
+        <div class="form-container mt-4">
+            <h2>Attendance Records</h2>
+            <form method="post">
+                {% csrf_token %}
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Student ID</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Attendance Marked</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in attendance_records %}
+                        <tr>
+                            <td>{{ record.enrollment.student.name }}</td>
+                            <td>{{ record.enrollment.student.student_id }}</td>
+                            <td>{{ selected_date }}</td>
+                            <td>
+                                <select name="status_{{ record.enrollment.id }}" class="form-control">
+                                    <option value="present" {% if record.status == 'present' %}selected{% endif %}>Present</option>
+                                    <option value="absent" {% if record.status == 'absent' %}selected{% endif %}>Absent</option>
+                                </select>
+                            </td>
+                            <td>
+                                {% if record.attendance_marked %}
+                                    Yes
+                                {% else %}
+                                    No
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="submit" class="btn btn-primary">Mark Attendance</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

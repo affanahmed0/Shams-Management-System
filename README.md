@@ -2,6 +2,7 @@
 A Student Management System for Shams Commercial Institute, built using Django to manage student admissions, attendance, fees, course slots, and more.
 ________________________________________
 🚀 Features
+
 ✅ Single Admin User
 ✅ Student Admission & Profiles
 ✅ Course & Slot Management
